@@ -1,2 +1,0 @@
-alpha_vantage
-.ipynb_checkpoints
