@@ -7,50 +7,6 @@ df = pd.DataFrame()
 df = data.DataReader('AMZN', 'yahoo', start = dt.date.today() - dt.timedelta(144))
 df = df.head(144)
 
-def MACD(Df, a, b, c):
-    df = Df.copy()
-    df['MA_Fast'] = df['Adj Close'].ewm(span = a, min_periods = a).mean()
-    df['MA_Slow'] = df['Adj Close'].ewm(span = b, min_periods = b).mean()
-    df['MACD'] = df['MA_Fast'] - df['MA_Slow']
-    df['Signal'] = df['MACD'].ewm(span = c, min_periods = c).mean()
-    df.dropna(inplace = True)
-    return df
-
-def BollBnd(Df, n):
-    df = Df.copy()
-    df['MA'] = df['Adj Close'].rolling(n).mean()
-    df['BB_up'] = df['Adj Close'].rolling(n).mean() + 2*df['MA'].rolling(n).std()
-    df['BB_dn'] = df['Adj Close'].rolling(n).mean() - 2*df['MA'].rolling(n).std()
-    df['BB_Width'] = df['BB_up'] - df['BB_dn']
-    df.dropna(inplace = True)
-    return df
-
-def RSI(Df, n):         
-    df = Df.copy()
-    df['delta'] = df['Adj Close'] - df['Adj Close'].shift(1)
-    df['gain'] = np.where(df['delta'] >= 0, df['delta'], 0)
-    df['loss'] = np.where(df['delta'] < 0, abs(df['delta']), 0)
-    avg_gain = []
-    avg_loss = []
-    gain = df['gain'].tolist()
-    loss = df['loss'].tolist()
-    for i in range(len(df)):
-        if i < n:
-            avg_gain.append(np.NaN)
-            avg_loss.append(np.NaN)
-        elif i == n:
-            avg_gain.append(df['gain'].rolling(n).mean().tolist()[n])
-            avg_loss.append(df['loss'].rolling(n).mean().tolist()[n])
-        elif i > n:
-            avg_gain.append(((n-1)*avg_gain[i-1] + gain[i])/n)
-            avg_loss.append(((n-1)*avg_loss[i-1] + loss[i])/n)
-    
-    df['avg_gain'] = np.array(avg_gain)
-    df['avg_loss'] = np.array(avg_loss)
-    df['RS'] = df['avg_gain']/df['avg_loss']
-    df['RSI'] = 100 - (100/(1+df['RS']))
-    return df
-
 def ATR(Df, n):
     df = Df.copy()
     df['H-L']  = abs(df['High'] - df['Low'])
@@ -110,3 +66,5 @@ def ADX(DF,n):
             ADX.append(((n-1)*ADX[j-1] + DX[j])/n)
     df2['ADX'] = np.array(ADX)
     return df2['ADX']
+
+print(ADX(df, 14))
