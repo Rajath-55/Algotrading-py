@@ -113,6 +113,11 @@ def ADX(DF,n):
     df2['ADX'] = np.array(ADX)
     return df2['ADX']
 
+def stochastic_oscillator(df):
+    so = pd.Series((df['Close'] - df['Low']) / (df['High'] - df['Low']), name='SO%k')
+    df = df.join(so)
+    return df   
+
 
 #print(BollBnd(df, 14))
 #print(MACD(df, 12, 26, 14))
